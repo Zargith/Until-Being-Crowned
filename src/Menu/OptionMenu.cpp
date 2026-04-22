@@ -37,12 +37,12 @@ namespace UntilBeingCrowned
 
 		auto checkBox = this->_gui.get<tgui::CheckBox>("fullscreenCheckBox");
 
-		this->_gui.get<tgui::Button>("back")->connect(tgui::Signals::Button::Pressed, &OptionMenu::back, this);
-		this->_gui.get<tgui::Button>("save")->connect(tgui::Signals::Button::Pressed, &OptionMenu::save, this);
+		this->_gui.get<tgui::Button>("back")->onPress.connect(&OptionMenu::back, this);
+		this->_gui.get<tgui::Button>("save")->onPress.connect(&OptionMenu::save, this);
 		this->_sliderMusic = this->_gui.get<tgui::Slider>("volumeMusicSlider");
-		this->_sliderMusic->connect(tgui::Signals::Slider::ValueChanged, &OptionMenu::setMusicVolume, this);
+		this->_sliderMusic->onValueChange.connect(&OptionMenu::setMusicVolume, this);
 		this->_sliderSfx = this->_gui.get<tgui::Slider>("volumeSoundSlider");
-		this->_sliderSfx->connect(tgui::Signals::Slider::ValueChanged, &OptionMenu::setSoundVolume, this);
+		this->_sliderSfx->onValueChange.connect(&OptionMenu::setSoundVolume, this);
 		this->_initMusicVolume = this->_res.getMusicVolume();
 		this->_newMusicVolume = this->_initMusicVolume;
 		this->_sliderMusic->setValue(this->_initMusicVolume);
@@ -51,8 +51,8 @@ namespace UntilBeingCrowned
 		this->_sliderSfx->setValue(this->_initSoundVolume);
 
 		checkBox->setChecked(this->_initFullscreen);
-		checkBox->connect(tgui::Signals::RadioButton::Checked,    &OptionMenu::setFullscreen, this, true);
-		checkBox->connect(tgui::Signals::RadioButton::Unchecked,  &OptionMenu::setFullscreen, this, false);
+		checkBox->onCheck.connect(&OptionMenu::setFullscreen, this, true);
+		checkBox->onUncheck.connect(&OptionMenu::setFullscreen, this, false);
 		this->_initFullscreen = this->_res.screen.isFullscreen();
 		this->_newFullScreen = this->_initFullscreen;
 	}

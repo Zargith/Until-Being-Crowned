@@ -1,0 +1,19 @@
+{
+  "name": "ubc",
+  "version-string": "1.0.0",
+  "dependencies": [
+    "sfml",
+    "tgui"
+  ],
+  "builtin-baseline": "9ef3f1dc722a8d2b077f09c65b554003a629c338",
+  "overrides": [
+    {
+      "name": "sfml",
+      "version": "2.5.1"
+    },
+    {
+      "name": "tgui",
+      "version": "0.9.5"
+    }
+  ]
+}

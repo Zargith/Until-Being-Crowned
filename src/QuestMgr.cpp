@@ -4,7 +4,8 @@
 
 #include <filesystem>
 #include <iostream>
-#include <TGUI/Widgets/TextBox.hpp>
+// #include <TGUI/Widgets/TextBox.hpp>
+#include <TGUI/Widgets/TextArea.hpp>
 #include <utility>
 #include "QuestMgr.hpp"
 #include "Exceptions.hpp"
@@ -60,7 +61,7 @@ namespace UntilBeingCrowned
 		auto val = this->_quests.at(id);
 		int size = val->buttons.size();
 		auto title = this->_panel->get<tgui::Label>("Title");
-		auto desc = this->_panel->get<tgui::TextBox>("TextBox1");
+		auto desc = this->_panel->get<tgui::TextArea>("TextBox1");
 		auto fct = [this, val, id, &gui, panel](unsigned butId) {
 			if (this->_onClickButton)
 				this->_onClickButton({*val, butId, id});
@@ -99,7 +100,7 @@ namespace UntilBeingCrowned
 		this->_panel->get<tgui::Label>("Gold")->setText("Gold: " + std::to_string(this->_state.gold));
 		this->_panel->get<tgui::Label>("Army")->setText("Army: " + std::to_string(this->_state.army));
 		this->_panel->get<tgui::Label>("Food")->setText("Food: " + std::to_string(this->_state.food));
-		this->_panel->get<tgui::Button>("Back")->connect("Clicked", [&gui, panel, this]{
+		this->_panel->get<tgui::Button>("Back")->onPress.connect([&gui, panel, this]{
 			gui.remove(this->_panel);
 			gui.remove(panel);
 		});
@@ -116,7 +117,7 @@ namespace UntilBeingCrowned
 			but->setTextSize(16);
 			but->setSize(600, 30);
 			but->setPosition(625, 40 * y);
-			but->connect("clicked", fct, index);
+			but->onPress.connect(fct, index);
 			index++;
 			this->_buttons.push_back(but);
 			this->_panel->add(but);

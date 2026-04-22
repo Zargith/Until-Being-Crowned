@@ -107,7 +107,7 @@ namespace UntilBeingCrowned
 			if (quest->forceOpen)
 				this->_questsMgr.showDialog(quest->getId(), this->_gui);
 
-		this->_gui.get<tgui::Button>("Back")->connect(tgui::Signals::Button::Pressed, &InGameMenu::_saveAndQuit, this);
+		this->_gui.get<tgui::Button>("Back")->onPress.connect(&InGameMenu::_saveAndQuit, this);
 	}
 
 	void InGameMenu::render()
@@ -195,7 +195,7 @@ namespace UntilBeingCrowned
 		auto unlockedQuestsList = this->_gui.get<tgui::Button>("Quests");
 		auto nextWeek = this->_gui.get<tgui::Button>("Next");
 
-		nextWeek->connect("Clicked", &InGameMenu::_nextWeek, this);
+		nextWeek->onPress.connect(&InGameMenu::_nextWeek, this);
 		newQuestsList->onClick.connect([this]{
 			this->_res.playSound("paper");
 			this->_showQuestList(this->_questsMgr.getNewQuests(), "New quests");

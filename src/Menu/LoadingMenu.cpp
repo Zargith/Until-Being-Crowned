@@ -22,7 +22,9 @@ namespace UntilBeingCrowned
         }
 
         this->_gui.loadWidgetsFromFile("gui/loadMenu.gui");
-        this->_gui.get("back")->cast<tgui::Button>()->connect(tgui::Signals::Button::Pressed, &LoadingMenu::_backButton, this);
+//        this->_gui.get("back")->cast<tgui::Button>()->connect(tgui::Signals::Button::Pressed, &LoadingMenu::_backButton, this);
+        this->_gui.get("back")->cast<tgui::Button>()->onPress.connect(&LoadingMenu::_backButton, this);
+
     }
 
     void LoadingMenu::render()

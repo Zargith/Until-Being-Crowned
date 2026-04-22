@@ -89,8 +89,8 @@ namespace UntilBeingCrowned
 		if (this->_done)
 			return;
 
-		auto leftText = this->_gui.get<tgui::Panel>("otherPanel")->get<tgui::TextBox>("otherTextBox");
-		auto rightText = this->_gui.get<tgui::Panel>("myPanel")->get<tgui::TextBox>("myTextBox");
+		auto leftText = this->_gui.get<tgui::Panel>("otherPanel")->get<tgui::TextArea>("otherTextBox");
+		auto rightText = this->_gui.get<tgui::Panel>("myPanel")->get<tgui::TextArea>("myTextBox");
 		auto skipButton = this->_gui.get<tgui::Button>("Next");
 		auto &dialogMap = std::get<0>(this->_currentDialog);
 		auto &dialog = std::get<1>(this->_currentDialog);
@@ -100,7 +100,7 @@ namespace UntilBeingCrowned
 		rightText->setText("");
 		for (int i = 0; i < 5; i++) {
 			auto but = this->_gui.get<tgui::Button>("Button" + std::to_string(i));
-			but->disconnectAll();
+			but->onPress.disconnectAll();
 			but->setVisible(false);
 		}
 		dialogMap = id;
@@ -111,8 +111,8 @@ namespace UntilBeingCrowned
 		this->_left = this->_dialogsString[dialogMap][dialog][0] == 'l';
 		this->_onHold = false;
 		this->_lineEnded = this->_dialogsString[id][0].empty();
-		skipButton->disconnectAll();
-		skipButton->connect("Clicked", &DialogMgr::clicked, this);
+		skipButton->onPress.disconnectAll();
+		skipButton->onPress.connect(&DialogMgr::clicked, this);
 	}
 
 	bool DialogMgr::isDone() const
@@ -275,10 +275,10 @@ namespace UntilBeingCrowned
 			pic->getRenderer()->setTexture(tgui::Texture(
 				this->_resources.textures.at(sprite),
 				{
-					std::stoi(args[1]),
-					std::stoi(args[2]),
-					std::stoi(args[3]),
-					std::stoi(args[4]),
+					static_cast<unsigned int>(std::stoi(args[1])),
+					static_cast<unsigned int>(std::stoi(args[2])),
+					static_cast<unsigned int>(std::stoi(args[3])),
+					static_cast<unsigned int>(std::stoi(args[4])),
 				}
 			));
 		return {};
@@ -289,12 +289,12 @@ namespace UntilBeingCrowned
 		auto &dialogMap = std::get<0>(this->_currentDialog);
 		auto &dialog = std::get<1>(this->_currentDialog);
 		auto &textPos = std::get<2>(this->_currentDialog);
-		tgui::TextBox::Ptr textBox;
+		tgui::TextArea::Ptr textBox;
 
 		if (this->_left)
-			textBox = this->_gui.get<tgui::Panel>("otherPanel")->get<tgui::TextBox>("otherTextBox");
+			textBox = this->_gui.get<tgui::Panel>("otherPanel")->get<tgui::TextArea>("otherTextBox");
 		else
-			textBox = this->_gui.get<tgui::Panel>("myPanel")->get<tgui::TextBox>("myTextBox");
+			textBox = this->_gui.get<tgui::Panel>("myPanel")->get<tgui::TextArea>("myTextBox");
 
 		char c = this->_dialogsString[dialogMap][dialog][textPos];
 
@@ -334,7 +334,7 @@ namespace UntilBeingCrowned
 		auto disableButtons = [this]{
 			for (int i = 0; i < 5; i++) {
 				auto but = this->_gui.get<tgui::Button>("Button" + std::to_string(i));
-				but->disconnectAll();
+				but->onPress.disconnectAll();
 				but->setVisible(false);
 			}
 		};
@@ -347,13 +347,13 @@ namespace UntilBeingCrowned
 			button->setVisible(true);
 			button->setText(args[i]);
 			if (i + 1 < args.size()) {
-				button->connect("Clicked", [disableButtons, this](const std::string &warp){
+				button->onPress.connect([disableButtons, this](const std::string &warp){
 					this->_onHold = false;
 					disableButtons();
 					this->startDialog(warp);
 				}, args[i + 1]);
 			} else
-				button->connect("Clicked",[disableButtons, this]{
+				button->onPress.connect([disableButtons, this]{
 					this->_onHold = false;
 					disableButtons();
 					this->_nextLine();
@@ -497,7 +497,7 @@ namespace UntilBeingCrowned
 		else
 			pic = this->_gui.get<tgui::Picture>("Picture2");
 
-		pic->setPosition(args[0], args[1]);
+		pic->setPosition(tgui::Layout(args[0]), tgui::Layout(args[1]));
 		return {};
 	}
 
@@ -509,7 +509,7 @@ namespace UntilBeingCrowned
 		if (args.size() == 1 || args[1] != "false") {
 			this->_newBackground = args[0];
 			this->_waitingTime = 60;
-			this->_resources.textures.at(this->_newBackground);
+			(void)this->_resources.textures.at(this->_newBackground);
 		} else
 			this->_gui.get<tgui::Picture>("Picture1")->getRenderer()->setTexture(this->_resources.textures.at(args[0]));
 		return {};
@@ -531,7 +531,7 @@ namespace UntilBeingCrowned
 		if (args.size() != 2)
 			throw InvalidArgumentsException("Expected exactly 2 arguments.");
 
-		this->_gui.get<tgui::Picture>("Picture1")->setPosition(args[0], args[1]);
+		this->_gui.get<tgui::Picture>("Picture1")->setPosition(tgui::Layout(args[0]), tgui::Layout(args[1]));
 		return {};
 	}
 }

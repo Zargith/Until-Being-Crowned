@@ -1,31 +1,14 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(UBC)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(nlohmann "C:/Users/q/Desktop/TGUI-0.9-dev/include" "C:/Users/q/Desktop/SFML-2.5.1/include")
+# Find dependencies
+find_package(SFML 2.5 COMPONENTS graphics audio window system CONFIG REQUIRED)
+find_package(TGUI 0.9 CONFIG REQUIRED)
 
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
-	if (CMAKE_COMPILER_IS_GNUCC)
-		add_compile_options(-Wall -Wextra -W -g -D_DEBUG)
-	endif (CMAKE_COMPILER_IS_GNUCC)
-endif ()
-if ("${CMAKE_BUILD_TYPE}" STREQUAL Release)
-	if (CMAKE_COMPILER_IS_GNUCC)
-		if (WIN32)
-			add_link_options(-mwindows)
-		endif (WIN32)
-	endif (CMAKE_COMPILER_IS_GNUCC)
-endif ()
-if (WIN32)
-	set(ICON icon.rc)
-endif (WIN32)
-
-include_directories(nlohmann)
-
-set(
-	UBC_SRC
+set(UBC_SRC
 	src/Utils.cpp
 	src/Utils.hpp
 	src/main.cpp
@@ -73,38 +56,55 @@ set(
 	src/Menu/GenderMenu.hpp
 	src/DialogMgr.cpp
 	src/DialogMgr.hpp
-	src/Menu/DialogMenu.cpp src/Menu/DialogMenu.hpp src/Menu/VictoryMenu.cpp src/Menu/VictoryMenu.hpp src/Menu/GameoverMenu.cpp src/Menu/GameoverMenu.hpp)
+	src/Menu/DialogMenu.cpp
+	src/Menu/DialogMenu.hpp
+	src/Menu/VictoryMenu.cpp
+	src/Menu/VictoryMenu.hpp
+	src/Menu/GameoverMenu.cpp
+	src/Menu/GameoverMenu.hpp
+)
 
-if (MSVC)
-	add_executable(UBC ${UBC_SRC} icon.rc)
-	target_link_libraries(
-		UBC
-		"C:/Users/q/Desktop/SFML-2.5.1/lib/sfml-window.lib"
-		"C:/Users/q/Desktop/SFML-2.5.1/lib/sfml-system.lib"
-		"C:/Users/q/Desktop/SFML-2.5.1/lib/sfml-graphics.lib"
-		"C:/Users/q/Desktop/SFML-2.5.1/lib/sfml-audio.lib"
-		"C:/Users/q/Desktop/TGUI-0.9-dev/lib/tgui.lib"
-	)
-else (MSVC)
-	if (WIN32)
-		add_executable(UBC ${UBC_SRC} icon.rc)
-		target_link_libraries(
-			UBC
-			sfml-window
-			sfml-system
-			sfml-graphics
-			sfml-audio
-			tgui
-		)
-	else (WIN32)
-		add_executable(UBC ${UBC_SRC})
-		target_link_libraries(
-			UBC
-			sfml-window
-			sfml-system
-			sfml-graphics
-			sfml-audio
-			tgui
-		)
-	endif (WIN32)
-endif (MSVC)
+if(WIN32)
+	list(APPEND UBC_SRC icon.rc)
+endif()
+
+add_executable(UBC ${UBC_SRC})
+
+# Include local directories
+target_include_directories(UBC PRIVATE nlohmann)
+
+# Link libraries
+if(TARGET TGUI::TGUI)
+    target_link_libraries(UBC PRIVATE sfml-graphics sfml-audio sfml-window sfml-system TGUI::TGUI)
+elseif(TARGET tgui)
+    target_link_libraries(UBC PRIVATE sfml-graphics sfml-audio sfml-window sfml-system tgui)
+else()
+    target_link_libraries(UBC PRIVATE sfml-graphics sfml-audio sfml-window sfml-system TGUI)
+endif()
+
+# Copy runtime assets to the build directory after each build
+add_custom_command(TARGET UBC POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/gui"
+        "$<TARGET_FILE_DIR:UBC>/gui"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:UBC>/assets"
+    COMMENT "Copying assets and gui to build directory"
+)
+
+# Compiler options
+if(MSVC)
+    target_compile_options(UBC PRIVATE /W4)
+    # Release: no console window, optimized (generator expression for multi-config generators)
+    set_target_properties(UBC PROPERTIES
+        WIN32_EXECUTABLE $<CONFIG:Release>
+    )
+    target_link_options(UBC PRIVATE $<$<CONFIG:Release>:/SUBSYSTEM:WINDOWS> $<$<CONFIG:Release>:/ENTRY:mainCRTStartup>)
+    target_compile_options(UBC PRIVATE $<$<CONFIG:Release>:/O2>)
+else()
+    target_compile_options(UBC PRIVATE -Wall -Wextra)
+    if(WIN32)
+        target_link_options(UBC PRIVATE $<$<CONFIG:Release>:-mwindows>)
+    endif()
+endif()
