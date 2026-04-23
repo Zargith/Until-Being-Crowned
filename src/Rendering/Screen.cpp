@@ -158,12 +158,16 @@ namespace UntilBeingCrowned::Rendering
 			{width * 1.f, height * 1.f}
 		};
 
+		if (fullscreen && modes.empty())
+			fullscreen = false;
+
 		this->create(
 			fullscreen ? modes[0] : sf::VideoMode(width, height),
 			title,
 			fullscreen ? sf::Style::Fullscreen : sf::Style::Default
 		);
 		this->setView(view);
+		this->setFramerateLimit(60);
 		this->_isFullscreen = fullscreen;
 	}
 }

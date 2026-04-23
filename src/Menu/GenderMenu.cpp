@@ -24,8 +24,11 @@ namespace UntilBeingCrowned
 		}
 
 		this->_gui.loadWidgetsFromFile("gui/genderMenu.gui");
-		this->_gui.get<tgui::Button>("femaleButton")->connect(tgui::Signals::Button::Pressed, &GenderMenu::_runGame, this, "player_f");
-		this->_gui.get<tgui::Button>("maleButton")->connect(tgui::Signals::Button::Pressed, &GenderMenu::_runGame, this, "player_m");
+//		this->_gui.get<tgui::Button>("femaleButton")->connect(tgui::Signals::Button::Pressed, &GenderMenu::_runGame, this, "player_f");
+		this->_gui.get<tgui::Button>("femaleButton")->cast<tgui::Button>()->onPress.connect(&GenderMenu::_runGame, this, "player_f");
+
+//		this->_gui.get<tgui::Button>("maleButton")->connect(tgui::Signals::Button::Pressed, &GenderMenu::_runGame, this, "player_m");
+		this->_gui.get<tgui::Button>("maleButton")->cast<tgui::Button>()->onPress.connect(&GenderMenu::_runGame, this, "player_m");
 
 	}
 

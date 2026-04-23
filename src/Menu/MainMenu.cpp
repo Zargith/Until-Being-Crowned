@@ -27,16 +27,14 @@ namespace UntilBeingCrowned
 
 		this->_gui.loadWidgetsFromFile("gui/mainMenu.gui");
 
-		this->_gui.get<tgui::Button>("newGame")->connect(
-			tgui::Signals::Button::Pressed,
+		this->_gui.get<tgui::Button>("newGame")->onPress.connect(
 			[this]{
 				this->_res.playSound("click_button");
 				this->_mgr.changeMenu("gender");
 			}
 		);
 
-		this->_gui.get<tgui::Button>("loadGame")->connect(
-			tgui::Signals::Button::Pressed,
+		this->_gui.get<tgui::Button>("loadGame")->onPress.connect(
 			[this]{
 				this->_res.playSound("click_button");
 				this->_res.playMusic(in_game_musics[this->_res.random() % in_game_musics.size()]);
@@ -44,16 +42,14 @@ namespace UntilBeingCrowned
 			}
 		);
 
-		this->_gui.get<tgui::Button>("options")->connect(
-			tgui::Signals::Button::Pressed,
+		this->_gui.get<tgui::Button>("options")->onPress.connect(
 			[this]{
 				this->_res.playSound("click_button");
 				this->_mgr.changeMenu("option");
 			}
 		);
 
-		this->_gui.get<tgui::Button>("exit")->connect(
-			tgui::Signals::Button::Pressed,
+		this->_gui.get<tgui::Button>("exit")->onPress.connect(
 			&Rendering::Screen::close,
 			&this->_res.screen
 		);
@@ -76,4 +72,3 @@ namespace UntilBeingCrowned
 			this->_mgr.changeMenu("in_game");
 	}
 }
-

@@ -9,7 +9,8 @@
 #include <string>
 #include <tuple>
 #include <map>
-#include <TGUI/Gui.hpp>
+#include <TGUI/TGUI.hpp>
+#include <TGUI/Backends/SFML.hpp>
 #include "Resources/GameState.hpp"
 #include "Resources/Resources.hpp"
 
